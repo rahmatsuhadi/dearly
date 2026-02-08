@@ -1,8 +1,8 @@
-# Dearly - Sampaikan Pesanmu Lebih Bermakna 💌
+# Dearly
 
 Platform kartu ucapan digital interaktif yang dibuat dengan Next.js 16, memungkinkan pengguna membuat dan mengirim momen spesial secara personal dengan animasi yang memukau.
 
-## ✨ Fitur Utama
+## Fitur
 
 - **Template Interaktif**: Beragam pilihan template seperti Amplop Klasik, Kue Ulang Tahun (bisa tiup lilin!), Bouquet Bunga, Kotak Harta Karun, dan banyak lagi.
 - **AI Magic Writer**: Tidak jago merangkai kata? Biarkan AI (Groq) menuliskan pesan puitis untukmu.
@@ -21,9 +21,9 @@ Platform kartu ucapan digital interaktif yang dibuat dengan Next.js 16, memungki
 - **AI**: [Groq SDK](https://groq.com/) (Llama 3)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
-## 🚀 Cara Menjalankan Project
+## Jalankan Project
 
-1. **Clone repository ini**
+1. **Clone**
    ```bash
    git clone https://github.com/username/dearly.git
    cd dearly
@@ -34,7 +34,7 @@ Platform kartu ucapan digital interaktif yang dibuat dengan Next.js 16, memungki
    pnpm install
    ```
 
-3. **Setup Environment Variables**
+3. **Setup Env**
    Salin file `.env.example` ke `.env` dan sesuaikan isinya:
    ```bash
    cp .env.example .env
@@ -51,8 +51,5 @@ Platform kartu ucapan digital interaktif yang dibuat dengan Next.js 16, memungki
    pnpm run dev
    ```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser kamu.
+Buka [http://localhost:3000](http://localhost:3000).
 
-## 📄 Lisensi
-
-Dibuat dengan ❤️ oleh Tim Dearly.
