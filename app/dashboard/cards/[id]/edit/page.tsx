@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check, Sparkles, Type, Palette, Eye, Heart, Star, PartyPopper, ScrollText, Wand2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Sparkles, Type, Palette, Eye, Heart, Star, PartyPopper, ScrollText, Wand2, Bot, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { Button, Card, Textarea } from '@/components/ui';
@@ -31,12 +31,15 @@ interface CardFormData {
   font: string;
   accentColor: string;
   envelopeStyle: string;
+  status: 'draft' | 'published';
 }
 
-export default function CreateCardPage() {
+export default function EditCardPage() {
   const router = useRouter();
+  const params = useParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   const [cardData, setCardData] = useState<CardFormData>({
     category: '',
@@ -48,7 +51,43 @@ export default function CreateCardPage() {
     font: 'default',
     accentColor: '#f43f5e',
     envelopeStyle: 'kraft',
+    status: 'draft',
   });
+
+  useEffect(() => {
+    const fetchCard = async () => {
+      try {
+        const res = await fetch(`/api/cards/${params.id}`);
+        if (!res.ok) throw new Error("Gagal mengambil data kartu");
+        
+        const data = await res.json();
+        
+        // Map API data to form data
+        setCardData({
+          category: data.category,
+          template: data.templateId, // Note: API returns templateId
+          recipientName: data.recipientName || '',
+          senderName: data.senderName || '',
+          title: data.title,
+          message: data.message,
+          font: data.fontFamily || 'default', // Note: API returns fontFamily
+          accentColor: data.textColor || '#f43f5e', // Note: API uses textColor for accent
+          envelopeStyle: data.envelopeStyle || 'kraft',
+          status: data.status,
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Gagal memuat kartu");
+        router.push('/dashboard/cards');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchCard();
+    }
+  }, [params.id, router]);
 
   const updateField = <K extends keyof CardFormData>(field: K, value: CardFormData[K]) => {
     setCardData(prev => ({ ...prev, [field]: value }));
@@ -77,27 +116,42 @@ export default function CreateCardPage() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/cards', {
-        method: 'POST',
+      const response = await fetch(`/api/cards/${params.id}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cardData),
       });
 
       if (response.ok) {
-        toast.success('Kartu berhasil dibuat!');
+        toast.success('Kartu berhasil diperbarui!');
         router.push('/dashboard/cards');
       } else {
-        throw new Error('Gagal membuat kartu');
+        throw new Error('Gagal memperbarui kartu');
       }
     } catch {
-      toast.error('Gagal membuat kartu. Coba lagi.');
+      toast.error('Gagal memperbarui kartu. Coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-text-primary">Edit Kartu</h1>
+        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/cards')}>
+          Batal
+        </Button>
+      </div>
+
       {/* Progress Steps */}
       <Stepper steps={steps} currentStep={currentStep} className="mb-8" />
 
@@ -154,7 +208,7 @@ export default function CreateCardPage() {
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between mt-6">
         <Button variant="ghost" onClick={handleBack} leftIcon={<ArrowLeft className="w-5 h-5" />}>
-          {currentStep === 1 ? 'Batal' : 'Kembali'}
+          Kembali
         </Button>
 
         {currentStep < 5 ? (
@@ -171,7 +225,7 @@ export default function CreateCardPage() {
             isLoading={isSubmitting}
             rightIcon={<Check className="w-5 h-5" />}
           >
-            Buat Kartu
+            Simpan Perubahan
           </Button>
         )}
       </div>
@@ -179,7 +233,10 @@ export default function CreateCardPage() {
   );
 }
 
-// Step Components
+// Reuse components from Create Page (copy-pasted for independence)
+// Ideally these should be extracted to shared components, but for speed we duplicate logic here
+// but update imports/icons as needed.
+
 function CategoryStep({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
   return (
     <div>
@@ -234,7 +291,6 @@ function TemplateStep({ selected, onSelect }: { selected: string; onSelect: (v: 
                   : 'border-border hover:border-primary-300'
               }`}
             >
-              {/* Interaction Badge */}
               {isMultiInteraction && (
                 <div 
                   className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-md"
@@ -253,7 +309,6 @@ function TemplateStep({ selected, onSelect }: { selected: string; onSelect: (v: 
               <h3 className="font-semibold text-text-primary text-sm">{template.name}</h3>
               <p className="text-xs text-text-tertiary mt-1 line-clamp-2">{template.description}</p>
               
-              {/* Category Tag */}
               <div className="mt-2">
                 <span 
                   className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium"
@@ -296,8 +351,6 @@ function TemplateStep({ selected, onSelect }: { selected: string; onSelect: (v: 
   );
 }
 
-import { Bot, Loader2, X } from 'lucide-react';
-
 function ContentStep({ 
   data, 
   onChange 
@@ -322,7 +375,7 @@ function ContentStep({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          category: data.category, // You might want to map ID to Name if needed
+          category: data.category,
           recipientName: data.recipientName,
           senderName: data.senderName,
           userPrompt: aiPrompt,
@@ -404,7 +457,6 @@ function ContentStep({
         </div>
       </div>
 
-      {/* AI Writer Modal */}
       <AnimatePresence>
         {showAiModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -460,9 +512,6 @@ function ContentStep({
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
                   />
-                  <p className="text-xs text-gray-400 mt-1">
-                    Semakin detail instruksinya, semakin personal hasilnya.
-                  </p>
                 </div>
 
                 <button
@@ -504,7 +553,6 @@ function DesignStep({
       <p className="text-text-secondary mb-6">Sesuaikan tampilan kartumu</p>
       
       <div className="space-y-6">
-        {/* Font Selection */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-3">Font</label>
           <div className="flex flex-wrap gap-3">
@@ -525,7 +573,6 @@ function DesignStep({
           </div>
         </div>
 
-        {/* Color Selection */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-3">Warna Aksen</label>
           <div className="flex flex-wrap gap-3">
@@ -543,7 +590,6 @@ function DesignStep({
           </div>
         </div>
 
-        {/* Envelope Style (only show for envelope template) */}
         {data.template === 'envelope' && (
           <div>
             <label className="block text-sm font-medium text-text-primary mb-3">Gaya Amplop</label>
@@ -586,30 +632,6 @@ function PreviewStep({ data }: { data: CardFormData }) {
       <p className="text-text-secondary mb-6">Lihat hasil akhir kartumu - coba klik untuk melihat animasi!</p>
       
       <div className="bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 rounded-xl p-8 min-h-[600px] flex items-center justify-center overflow-hidden relative">
-        {/* Background Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-4 h-4 rounded-full opacity-20"
-              style={{ 
-                backgroundColor: data.accentColor,
-                left: `${20 + i * 15}%`,
-                top: `${10 + i * 20}%`
-              }}
-              animate={{ 
-                y: [0, -20, 0],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{ 
-                duration: 3 + i, 
-                repeat: Infinity,
-                delay: i * 0.5 
-              }}
-            />
-          ))}
-        </div>
-
         <AnimatePresence mode="wait">
           {!previewOpened ? (
             <TemplateRenderer
@@ -620,247 +642,10 @@ function PreviewStep({ data }: { data: CardFormData }) {
               onOpen={() => setPreviewOpened(true)}
             />
           ) : (
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
-              className="relative max-w-md w-full"
-            >
-              {/* Floating Sparkles */}
-              {[...Array(4)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute pointer-events-none"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ 
-                    opacity: [0, 1, 0],
-                    scale: [0, 1, 0],
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    delay: 0.5 + i * 0.3,
-                    repeat: Infinity,
-                    repeatDelay: 2
-                  }}
-                  style={{ 
-                    top: `${20 + i * 15}%`, 
-                    left: i % 2 === 0 ? '-10%' : '100%',
-                  }}
-                >
-                  <Sparkles className="w-5 h-5" style={{ color: data.accentColor }} />
-                </motion.div>
-              ))}
-
-              {/* Main Card */}
-              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-                {/* Decorative Corner Patterns */}
-                <div 
-                  className="absolute top-0 right-0 w-32 h-32 opacity-10 rounded-3xl"
-                  style={{
-                    background: `radial-gradient(circle at 100% 0%, ${data.accentColor}, transparent 70%)`,
-                  }}
-                />
-
-                {/* Header with Gradient */}
-                <div 
-                  className="relative h-40 flex items-center justify-center overflow-hidden"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${data.accentColor}, ${data.accentColor}cc, ${data.accentColor}99)` 
-                  }}
-                >
-                  {/* Animated Background Shapes */}
-                  <motion.div
-                    className="absolute -top-10 -left-10 w-40 h-40 rounded-full opacity-20"
-                    style={{ backgroundColor: 'white' }}
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      x: [0, 10, 0],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  />
-                  <motion.div
-                    className="absolute -bottom-16 -right-10 w-40 h-40 rounded-full opacity-10"
-                    style={{ backgroundColor: 'white' }}
-                    animate={{ 
-                      scale: [1.2, 1, 1.2],
-                    }}
-                    transition={{ duration: 5, repeat: Infinity }}
-                  />
-
-                  {/* Icon with Glow */}
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ delay: 0.3, type: 'spring', bounce: 0.5 }}
-                    className="relative z-10"
-                  >
-                    <div className="absolute inset-0 rounded-3xl blur-xl opacity-50 bg-white" />
-                    <div className="relative w-20 h-20 rounded-3xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                      {CategoryIcon ? (
-                        <CategoryIcon className="w-10 h-10 text-white drop-shadow-lg" />
-                      ) : (
-                        <Heart className="w-10 h-10 text-white fill-white drop-shadow-lg" />
-                      )}
-                    </div>
-                  </motion.div>
-
-                  {/* Sparkle Decorations */}
-                  <motion.div
-                    className="absolute top-4 left-6"
-                    animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <Sparkles className="w-5 h-5 text-white/40" />
-                  </motion.div>
-                  <motion.div
-                    className="absolute bottom-4 right-6"
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <Star className="w-4 h-4 text-white/40 fill-white/20" />
-                  </motion.div>
-                </div>
-
-                {/* Body Content */}
-                <div className="relative px-6 py-8">
-                  {/* Decorative Divider */}
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                    <motion.div 
-                      className="w-10 h-0.5 rounded-full"
-                      style={{ backgroundColor: data.accentColor }}
-                      initial={{ width: 0 }}
-                      animate={{ width: 40 }}
-                      transition={{ delay: 0.5, duration: 0.4 }}
-                    />
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.6, type: 'spring' }}
-                    >
-                      <Heart className="w-3 h-3" style={{ color: data.accentColor, fill: data.accentColor }} />
-                    </motion.div>
-                    <motion.div 
-                      className="w-10 h-0.5 rounded-full"
-                      style={{ backgroundColor: data.accentColor }}
-                      initial={{ width: 0 }}
-                      animate={{ width: 40 }}
-                      transition={{ delay: 0.5, duration: 0.4 }}
-                    />
-                  </div>
-
-                  {/* Recipient */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-center mb-4"
-                  >
-                    <span className="text-xs text-gray-400 tracking-wider uppercase">Untuk yang tersayang</span>
-                    <p 
-                      className="text-lg font-display font-semibold mt-1"
-                      style={{ color: data.accentColor }}
-                    >
-                      {data.recipientName || 'Nama Penerima'}
-                    </p>
-                  </motion.div>
-
-                  {/* Title */}
-                  <motion.h3 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-center text-2xl font-bold mb-5"
-                    style={{ fontFamily: font?.family, color: '#1a1a2e' }}
-                  >
-                    {data.title || 'Judul Kartu'}
-                  </motion.h3>
-                  
-                  {/* Message */}
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="relative"
-                  >
-                    <div 
-                      className="absolute -top-3 -left-1 text-4xl font-serif opacity-10"
-                      style={{ color: data.accentColor }}
-                    >
-                      "
-                    </div>
-                    <p 
-                      className="text-gray-600 whitespace-pre-wrap leading-relaxed text-center px-3"
-                      style={{ fontFamily: font?.family }}
-                    >
-                      {data.message || 'Pesan kartumu akan muncul di sini...'}
-                    </p>
-                    <div 
-                      className="absolute -bottom-4 -right-1 text-4xl font-serif opacity-10 rotate-180"
-                      style={{ color: data.accentColor }}
-                    >
-                      "
-                    </div>
-                  </motion.div>
-                  
-                  {/* Sender Section */}
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="mt-8 text-center"
-                  >
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <div className="w-6 h-px bg-gray-200" />
-                      <Heart className="w-2 h-2" style={{ color: data.accentColor, fill: data.accentColor }} />
-                      <div className="w-6 h-px bg-gray-200" />
-                    </div>
-                    <span className="text-gray-400 text-xs">Dengan penuh cinta,</span>
-                    <p 
-                      className="text-lg font-display font-semibold mt-0.5"
-                      style={{ color: data.accentColor, fontFamily: font?.family }}
-                    >
-                      {data.senderName || 'Nama Pengirim'}
-                    </p>
-                  </motion.div>
-                </div>
-
-                {/* Footer */}
-                <div className="px-6 py-3 bg-gradient-to-r from-gray-50 via-white to-gray-50 border-t border-gray-100">
-                  <div className="flex items-center justify-center gap-2">
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
-                      <Heart className="w-3 h-3 fill-current" style={{ color: data.accentColor }} />
-                    </motion.div>
-                    <p className="text-xs text-gray-400">
-                      Dibuat dengan cinta di{' '}
-                      <span className="font-semibold" style={{ color: data.accentColor }}>Cardify</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Reset Preview Button */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="mt-4 text-center"
-              >
-                <button
-                  onClick={() => setPreviewOpened(false)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105"
-                  style={{ 
-                    backgroundColor: `${data.accentColor}15`,
-                    color: data.accentColor
-                  }}
-                >
-                  <span>↻</span>
-                  Lihat animasi lagi
-                </button>
-              </motion.div>
-            </motion.div>
+            <div className="text-center">
+              <p className="text-lg font-bold mb-4">Preview Mode</p>
+              <Button onClick={() => setPreviewOpened(false)}>Coba Lagi</Button>
+            </div>
           )}
         </AnimatePresence>
       </div>

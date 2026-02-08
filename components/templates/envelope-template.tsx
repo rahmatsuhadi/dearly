@@ -91,7 +91,7 @@ export function EnvelopeTemplate({
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        Tap untuk membuka surat 💌
+        Tap untuk membuka surat
       </motion.p>
     </motion.div>
   );

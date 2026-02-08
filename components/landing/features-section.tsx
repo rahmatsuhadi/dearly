@@ -20,8 +20,8 @@ interface FeaturesSectionProps {
 
 export function FeaturesSection({ 
   features, 
-  title = 'Fitur yang Membuatmu Jatuh Hati',
-  subtitle = 'Semua yang kamu butuhkan untuk membuat kartu ucapan digital yang sempurna',
+  title = 'Fitur Utama',
+  subtitle = 'Buat kartu ucapan digital dengan berbagai fitur menarik.',
   className = '',
   id
 }: FeaturesSectionProps) {

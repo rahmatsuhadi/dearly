@@ -44,7 +44,7 @@ export function HeroSection({ className = '' }: HeroSectionProps) {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100/80 text-primary-700 text-sm font-medium mb-6"
           >
             <Sparkles className="w-4 h-4" />
-            Platform Greeting Card Digital #1
+            Platform Kartu Ucapan Digital
           </motion.div>
           
           <motion.h1
@@ -53,9 +53,9 @@ export function HeroSection({ className = '' }: HeroSectionProps) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-text-primary leading-tight mb-6"
           >
-            Buat Kartu Ucapan{' '}
+            Kirim Kartu Ucapan{' '}
             <span className="text-gradient">Digital</span>{' '}
-            yang Berkesan
+            untuk Momen Spesial
           </motion.h1>
           
           <motion.p
@@ -64,8 +64,7 @@ export function HeroSection({ className = '' }: HeroSectionProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-text-secondary mb-8 max-w-2xl mx-auto"
           >
-            Sampaikan perasaanmu dengan cara yang lebih personal dan kreatif. 
-            Buat, kustomisasi, dan bagikan kartu ucapan dengan animasi amplop yang indah.
+            Buat dan kirimkan kartu ucapan digital kepada teman, keluarga, atau pasangan dengan mudah. Pilih template, tulis pesan, dan kirim.
           </motion.p>
           
           <motion.div
@@ -94,16 +93,16 @@ export function HeroSection({ className = '' }: HeroSectionProps) {
             className="flex items-center justify-center gap-8 sm:gap-12 mt-12 pt-8 border-t border-border/50"
           >
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-text-primary">10K+</p>
-              <p className="text-sm text-text-tertiary">Kartu Dibuat</p>
+              <p className="font-semibold text-text-primary">Mudah Digunakan</p>
+              <p className="text-sm text-text-tertiary">Tanpa Ribet</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-text-primary">5K+</p>
-              <p className="text-sm text-text-tertiary">Pengguna Aktif</p>
+              <p className="font-semibold text-text-primary">Banyak Pilihan</p>
+              <p className="text-sm text-text-tertiary">Template Menarik</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-text-primary">50+</p>
-              <p className="text-sm text-text-tertiary">Template</p>
+              <p className="font-semibold text-text-primary">Gratis</p>
+              <p className="text-sm text-text-tertiary">Siap Pakai</p>
             </div>
           </motion.div>
         </div>

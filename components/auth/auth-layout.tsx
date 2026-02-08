@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Mail } from 'lucide-react';
+import { Envelope } from '../cards';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -83,7 +84,7 @@ function DefaultDecorativeContent() {
     >
       <div className="mb-8 relative">
         <div className="w-64 h-40 mx-auto rounded-2xl bg-white/20 backdrop-blur-sm shadow-2xl flex items-center justify-center">
-          <div className="text-4xl">💌</div>
+          <div className="text-4xl"><Mail size={50}/></div>
         </div>
       </div>
       

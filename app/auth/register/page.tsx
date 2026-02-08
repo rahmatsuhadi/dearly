@@ -73,7 +73,7 @@ export default function RegisterPage() {
         Buat Kartu Ucapan yang Berkesan
       </h2>
       <p className="text-white/80 text-lg mb-8">
-        Bergabung dengan ribuan pengguna yang telah mengirimkan momen istimewa lewat Cardify
+        Bergabung dengan ribuan pengguna yang telah mengirimkan momen istimewa lewat Dearly
       </p>
       
       <div className="space-y-4">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Search, Grid3X3, List, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,51 +10,40 @@ import { PageHeader, EmptyState } from '@/components/shared';
 import { CardGridItem, CardListItem, CardData } from '@/components/cards';
 import { getCategoryById } from '@/lib/constants';
 
-// Mock data - will be replaced with API data
-const mockCards: CardData[] = [
-  { 
-    id: '1', 
-    title: 'Happy Birthday Sayang!', 
-    message: 'Selamat ulang tahun! Semoga panjang umur...',
-    category: 'birthday', 
-    status: 'published',
-    viewCount: 45,
-    shareLink: 'abc123',
-    createdAt: '2024-02-05',
-  },
-  { 
-    id: '2', 
-    title: 'Valentine untuk Kamu', 
-    message: 'Untuk yang terkasih, di hari valentine...',
-    category: 'valentine', 
-    status: 'published',
-    viewCount: 128,
-    shareLink: 'xyz789',
-    createdAt: '2024-02-01',
-  },
-  { 
-    id: '3', 
-    title: 'Selamat Wisuda!', 
-    message: 'Congratulations! Kamu hebat...',
-    category: 'graduation', 
-    status: 'draft',
-    viewCount: 0,
-    shareLink: 'grd456',
-    createdAt: '2024-01-28',
-  },
-];
-
 type ViewMode = 'grid' | 'list';
 type FilterStatus = 'all' | 'published' | 'draft';
 
+// API fetch logic added
+
 export default function CardsPage() {
-  const [cards] = useState<CardData[]>(mockCards);
+  const [cards, setCards] = useState<CardData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
 
+  const fetchCards = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/cards');
+      if (res.ok) {
+        const data = await res.json();
+        setCards(data);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Gagal memuat kartu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCards();
+  }, []);
+
   const filteredCards = cards.filter((card) => {
-    const matchesSearch = card.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = card.title?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
     const matchesStatus = filterStatus === 'all' || card.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -64,9 +53,21 @@ export default function CardsPage() {
     toast.success('Link berhasil disalin!');
   };
 
-  const handleDelete = (id: string) => {
-    toast.success('Kartu berhasil dihapus!');
-    // Will implement actual delete logic
+  const handleDelete = async (id: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus kartu ini?')) return;
+    
+    try {
+      const res = await fetch(`/api/cards/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        toast.success('Kartu berhasil dihapus!');
+        fetchCards(); // Refresh list
+      } else {
+        throw new Error('Gagal menghapus');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Gagal menghapus kartu');
+    }
   };
 
   return (

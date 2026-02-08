@@ -14,10 +14,10 @@ interface CTASectionProps {
 }
 
 export function CTASection({ 
-  title = 'Siap Membuat Momen Istimewa?',
-  subtitle = 'Bergabung dengan ribuan pengguna yang telah mengirimkan kartu ucapan digital yang berkesan',
-  buttonText = 'Mulai Gratis Sekarang',
-  features = ['Gratis selamanya', 'Tanpa kartu kredit', 'Setup instan'],
+  title = 'Mulai Buat Kartu',
+  subtitle = 'Kirim ucapan spesial untuk orang tersayang sekarang juga.',
+  buttonText = 'Buat Sekarang',
+  features = ['Sepenuhnya Gratis', 'Tanpa Daftar Ribet', 'Langsung Jadi'],
   className = '' 
 }: CTASectionProps) {
   return (

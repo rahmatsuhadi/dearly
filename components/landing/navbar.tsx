@@ -65,7 +65,7 @@ export function Footer({ className = '' }: FooterProps) {
           </div>
           
           <p className="text-sm text-text-muted">
-            © 2024 Cardify. Made with ❤️ in Indonesia
+            © 2026 Dearly. Made with ❤️ in Indonesia
           </p>
         </div>
       </div>

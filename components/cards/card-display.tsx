@@ -400,7 +400,7 @@ export function CardContentDisplay({
             </motion.div>
             <p className="text-sm text-gray-400">
               Dibuat dengan cinta di{' '}
-              <span className="font-semibold" style={{ color: accentColor }}>Cardify</span>
+              <span className="font-semibold" style={{ color: accentColor }}>Dearly</span>
             </p>
           </div>
         </motion.div>

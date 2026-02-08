@@ -34,8 +34,8 @@ export function Logo({ size = 'md', showText = true, className = '' }: LogoProps
         <Mail className={`${iconInnerSizes[size]} text-white`} />
       </div>
       {showText && (
-        <span className={`${textSizes[size]} font-display font-bold text-gradient`}>
-          Cardify
+        <span className={`font-display font-bold text-gradient ${textSizes[size]}`}>
+          Dearly
         </span>
       )}
     </Link>

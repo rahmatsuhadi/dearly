@@ -34,23 +34,54 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Cardify - Digital Greeting Cards",
-  description:
-    "Create beautiful digital greeting cards for any occasion. Share love, joy, and celebrations with personalized cards.",
-  keywords: [
-    "greeting cards",
-    "digital cards",
-    "birthday",
-    "valentine",
-    "anniversary",
-    "celebration",
-  ],
-  authors: [{ name: "Cardify" }],
-  openGraph: {
-    title: "Cardify - Digital Greeting Cards",
-    description: "Create beautiful digital greeting cards for any occasion",
-    type: "website",
+  metadataBase: new URL('https://dearly.com'), // Ganti dengan domain asli nanti
+  title: {
+    default: "Dearly - Kirim Kartu Ucapan Digital Bermakna",
+    template: "%s | Dearly"
   },
+  description: "Platform kartu ucapan digital #1 di Indonesia. Buat dan kirim kartu ucapan interaktif untuk Ulang Tahun, Valentine, Wisuda, dan momen spesial lainnya secara gratis.",
+  keywords: [
+    "kartu ucapan digital", "greeting card online", "kirim kartu ucapan", 
+    "kartu ulang tahun digital", "kartu valentine online", "e-card indonesia",
+    "dearly", "kartu ucapan interaktif", "design kartu ucapan"
+  ],
+  authors: [{ name: "Dearly Team", url: "https://dearly.com" }],
+  creator: "Dearly",
+  publisher: "Dearly",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    title: "Dearly - Sampaikan Pesanmu Lebih Bermakna",
+    description: "Buat momen spesial tak terlupakan dengan kartu ucapan digital interaktif. Pilih template, tulis pesan, dan kirim ke orang tersayang.",
+    url: 'https://dearly.com',
+    siteName: 'Dearly',
+    locale: 'id_ID',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dearly - Kirim Kartu Ucapan Digital',
+    description: 'Platform kartu ucapan digital interaktif untuk setiap momen spesial.',
+    creator: '@dearly_id',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://dearly.com',
+  },
+  category: 'Lifestyle',
 };
 
 export default function RootLayout({

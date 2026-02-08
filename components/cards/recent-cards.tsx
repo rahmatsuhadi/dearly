@@ -65,17 +65,26 @@ export function RecentCardsList({ cards, getCategoryInfo }: RecentCardsListProps
       </div>
       
       <div className="divide-y divide-border">
-        {cards.map((card) => {
-          const catInfo = getCategoryInfo?.(card.category);
-          return (
-            <RecentCardItem 
-              key={card.id} 
-              card={card} 
-              categoryIcon={catInfo?.icon}
-              categoryColor={catInfo?.color}
-            />
-          );
-        })}
+        {cards.length === 0 ? (
+          <div className="p-8 text-center text-text-muted">
+            <p className="mb-2">Belum ada kartu</p>
+            <Link href="/dashboard/cards/create" className="text-primary-600 hover:underline text-sm font-medium">
+              Buat kartu pertamamu
+            </Link>
+          </div>
+        ) : (
+          cards.map((card) => {
+            const catInfo = getCategoryInfo?.(card.category);
+            return (
+              <RecentCardItem 
+                key={card.id} 
+                card={card} 
+                categoryIcon={catInfo?.icon}
+                categoryColor={catInfo?.color}
+              />
+            );
+          })
+        )}
       </div>
     </div>
   );
