@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cards     Card[]
+}
+
+model Card {
+  id            String  @id @default(cuid())
+  title         String
+  message       String
+  recipientName String?
+  senderName    String?
+
+  // Template & Design
+  templateId String
+  category   String
+  fontFamily String  @default("Inter")
+  fontSize   Int     @default(16)
+  textColor  String  @default("#1a1a1a")
+  bgColor    String  @default("#ffffff")
+  bgGradient String?
+  layout     String  @default("centered")
+
+  // Media
+  imageUrl String?
+  musicUrl String?
+  stickers String? // JSON string of stickers
+
+  // Envelope Animation Style
+  envelopeStyle String @default("classic")
+  envelopeColor String @default("#d4a574")
+
+  // Status & Sharing
+  status    String  @default("draft") // draft, published, scheduled
+  shareLink String  @unique
+  password  String? // For private cards
+  isPublic  Boolean @default(true)
+  viewCount Int     @default(0)
+
+  // Schedule
+  scheduledAt DateTime?
+  publishedAt DateTime?
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Template {
+  id            String  @id @default(cuid())
+  name          String
+  category      String
+  thumbnail     String
+  previewImage  String?
+  bgColor       String  @default("#ffffff")
+  bgGradient    String?
+  fontFamily    String  @default("Inter")
+  textColor     String  @default("#1a1a1a")
+  layout        String  @default("centered")
+  envelopeStyle String  @default("classic")
+  envelopeColor String  @default("#d4a574")
+  isActive      Boolean @default(true)
+  isPremium     Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
